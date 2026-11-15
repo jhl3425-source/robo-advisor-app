@@ -964,7 +964,10 @@ elif st.session_state.page == "portfolio_detail":
         st.rerun()
 
     portfolio_id = portfolio["id"]
-
+    st.write("이름 확인용")
+    st.write("포트폴리오 이름:", repr(portfolio.get("portfolio_name")))
+    st.write("투자자 이름:", repr(portfolio.get("investor_name")))
+    
     initial_amount = float(portfolio["initial_amount"])
     holdings = portfolio.get("holdings") or {}
     daily_returns = portfolio.get("daily_returns") or []
