@@ -179,6 +179,79 @@ else:
 
     st.divider()
 
+    # 리밸런싱 이력
+    st.divider()
+    st.subheader("리밸런싱 이력")
+
+    results = rebalancing_results[investor_type]
+
+    rebalancing_dates = results.index[
+        results["리밸런싱 여부"]
+    ]
+
+    if len(rebalancing_dates) == 0:
+        st.info("리밸런싱이 발생하지 않았습니다.")
+
+    else:
+        st.write(f"총 {len(rebalancing_dates)}회의 리밸런싱 발생")
+
+        selected_date = st.selectbox(
+            "리밸런싱 날짜 선택",
+            [
+                date.strftime("%Y-%m-%d")
+                for date in rebalancing_dates
+            ]
+        )
+
+        selected_date = pandas.to_datetime(selected_date)
+
+        before_columns = [
+            column for column in results.columns
+            if column.endswith("_조정 전 비중(%)")
+        ]
+
+        after_columns = [
+            column for column in results.columns
+            if column.endswith("_조정 후 비중(%)")
+        ]
+
+        rebalancing_table = pandas.DataFrame({
+            "ETF": [
+                column.replace("_조정 전 비중(%)", "")
+                for column in before_columns
+            ],
+            "조정 전 비중(%)": [
+                results.loc[selected_date, column]
+                for column in before_columns
+            ],
+            "조정 후 비중(%)": [
+                results.loc[selected_date, column]
+                for column in after_columns
+            ]
+        })
+
+        rebalancing_table["비중 변화(%p)"] = (
+            rebalancing_table["조정 후 비중(%)"]
+            - rebalancing_table["조정 전 비중(%)"]
+        )
+
+        st.dataframe(
+            rebalancing_table.round(2),
+            use_container_width=True,
+            hide_index=True
+        )
+
+    # 리밸런싱 성과 비교
+    st.divider()
+    st.subheader("리밸런싱 성과 비교")
+
+    comparison = comparison_table.loc[investor_type]
+
+    st.dataframe(
+        comparison.round(2),
+        use_container_width=True
+    )
+
     # 처음 화면으로 돌아가기
     if st.button("투자자 정보 다시 입력하기"):
         st.session_state.profile = None
