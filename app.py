@@ -378,6 +378,13 @@ def create_certificate(portfolio, metrics, rebalance_count):
     metric = ImageFont.truetype(font_path, 90)
     body = ImageFont.truetype(font_path, 55)
     small = ImageFont.truetype(font_path, 38)
+    
+    # 색상 설정
+    white = "#FFFFFF"
+    mint = "#6DD6C1"
+    muted = "#AAB8CC"
+    card = "#1C2C49"
+
     # 배경
     draw.ellipse((1400, -400, 2200, 400), fill="#172A49")
     draw.ellipse((-350, 1050, 450, 1850), fill="#172A49")
