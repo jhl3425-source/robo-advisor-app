@@ -354,31 +354,34 @@ def create_certificate(portfolio, metrics, rebalance_count):
     draw = ImageDraw.Draw(image)
 
     # 폰트
-    font_path = "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"
+        # 한글 폰트 경로 확인
+    font_paths = [
+        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/truetype/nanum/NanumGothic.ttf"
+    ]
 
-    try:
-        logo = ImageFont.truetype(font_path, 44)
-        title = ImageFont.truetype(font_path, 100)
-        name = ImageFont.truetype(font_path, 65)
-        return_font = ImageFont.truetype(font_path, 190)
-        heading = ImageFont.truetype(font_path, 36)
-        metric = ImageFont.truetype(font_path, 75)
-        body = ImageFont.truetype(font_path, 42)
-        small = ImageFont.truetype(font_path, 27)
-    except Exception:
-        logo = ImageFont.load_default()
-        title = ImageFont.load_default()
-        name = ImageFont.load_default()
-        return_font = ImageFont.load_default()
-        heading = ImageFont.load_default()
-        metric = ImageFont.load_default()
-        body = ImageFont.load_default()
-        small = ImageFont.load_default()
+    font_path = None
 
-    white = "#FFFFFF"
-    mint = "#6DD6C1"
-    muted = "#AAB8CC"
-    card = "#1C2C49"
+    for path in font_paths:
+        try:
+            test_font = ImageFont.truetype(path, 50)
+            font_path = path
+            break
+        except:
+            continue
+
+    if font_path is None:
+        raise RuntimeError("한글 폰트를 찾지 못했어. 폰트 설치가 필요해.")
+
+    logo = ImageFont.truetype(font_path, 55)
+    title = ImageFont.truetype(font_path, 120)
+    name = ImageFont.truetype(font_path, 85)
+    return_font = ImageFont.truetype(font_path, 220)
+    heading = ImageFont.truetype(font_path, 48)
+    metric = ImageFont.truetype(font_path, 90)
+    body = ImageFont.truetype(font_path, 55)
+    small = ImageFont.truetype(font_path, 38)
 
     # 배경
     draw.ellipse((1400, -400, 2200, 400), fill="#172A49")
