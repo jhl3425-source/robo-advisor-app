@@ -355,7 +355,25 @@ def create_certificate(portfolio, metrics, rebalance_count):
 
     #폰트
 
-     font_path = "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"
+    import os
+
+    font_candidates = [
+        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/truetype/nanum/NanumGothic.ttf",
+        "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc"
+    ]
+
+    font_path = None
+
+    for path in font_candidates:
+        if os.path.exists(path):
+            font_path = path
+            break
+
+    if font_path is None:
+        raise RuntimeError(
+            "한글 폰트 설치 확인 필요: packages.txt를 확인해줘"
+        )
 
     logo = ImageFont.truetype(font_path, 55)
     title = ImageFont.truetype(font_path, 120)
@@ -365,7 +383,6 @@ def create_certificate(portfolio, metrics, rebalance_count):
     metric = ImageFont.truetype(font_path, 90)
     body = ImageFont.truetype(font_path, 55)
     small = ImageFont.truetype(font_path, 38)
-
     # 배경
     draw.ellipse((1400, -400, 2200, 400), fill="#172A49")
     draw.ellipse((-350, 1050, 450, 1850), fill="#172A49")
