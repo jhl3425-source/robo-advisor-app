@@ -94,42 +94,38 @@ except Exception:
 # 3. 세션 상태 초기화
 # =========================================================
 
-if "page" not in st.session_state:
-    st.session_state.page = "home"
+default_values = {
+    "page": "home",
+    "access_token": None,
+    "refresh_token": None,
+    "user_id": None,
+    "selected_portfolio_id": None,
+    "wizard_step": 0,
 
-if "access_token" not in st.session_state:
-    st.session_state.access_token = None
+    # 실제 저장할 값
+    "wizard_investor_name": "",
+    "wizard_reason": "",
+    "wizard_amount": 10000000,
+    "wizard_investor_type": "위험중립형",
+    "wizard_portfolio_name": "",
+    "wizard_rebalance_mode": "자동"
+}
 
-if "refresh_token" not in st.session_state:
-    st.session_state.refresh_token = None
+for key, value in default_values.items():
+    if key not in st.session_state:
+        st.session_state[key] = value
 
-if "user_id" not in st.session_state:
-    st.session_state.user_id = None
 
-if "selected_portfolio_id" not in st.session_state:
-    st.session_state.selected_portfolio_id = None
+def sync_wizard_value(input_key, saved_key):
+    """화면 입력값을 유지할 세션 상태에 복사"""
+    st.session_state[saved_key] = st.session_state[input_key]
 
-if "wizard_step" not in st.session_state:
-    st.session_state.wizard_step = 0
 
-if "wizard_investor_name" not in st.session_state:
-    st.session_state.wizard_investor_name = ""
-
-if "wizard_reason" not in st.session_state:
-    st.session_state.wizard_reason = ""
-
-if "wizard_amount" not in st.session_state:
-    st.session_state.wizard_amount = 10000000
-
-if "wizard_investor_type" not in st.session_state:
-    st.session_state.wizard_investor_type = "위험중립형"
-
-if "wizard_portfolio_name" not in st.session_state:
-    st.session_state.wizard_portfolio_name = ""
-
-if "wizard_rebalance_mode" not in st.session_state:
-    st.session_state.wizard_rebalance_mode = "자동"
-
+def prepare_wizard_widget(input_key, saved_key):
+    """화면에 다시 나타난 입력 위젯의 값을 복구"""
+    if input_key not in st.session_state:
+        st.session_state[input_key] = st.session_state[saved_key]
+        
 # =========================================================
 # 4. 로그인 세션 복구
 # =========================================================
@@ -714,7 +710,6 @@ elif st.session_state.page == "products":
         st.session_state.page = "wizard"
         st.rerun()
 
-
 # =========================================================
 # 10. 포트폴리오 생성 마법사
 # =========================================================
@@ -740,35 +735,63 @@ elif st.session_state.page == "wizard":
     if step == 0:
         st.subheader("투자자 이름을 알려줘")
         st.write("포트폴리오에 표시할 이름이야")
+
+        prepare_wizard_widget(
+            "wizard_investor_name_input",
+            "wizard_investor_name"
+        )
+
         st.text_input(
             "이름",
-            key="wizard_investor_name",
-            placeholder="이름을 입력해줘"
+            key="wizard_investor_name_input",
+            placeholder="이름을 입력해줘",
+            on_change=sync_wizard_value,
+            args=("wizard_investor_name_input", "wizard_investor_name")
         )
 
     elif step == 1:
         st.subheader("투자 목적은 무엇이야?")
         st.write("어떤 이유로 포트폴리오를 구성하려고 해?")
+
+        prepare_wizard_widget(
+            "wizard_reason_input",
+            "wizard_reason"
+        )
+
         st.text_area(
             "투자 목적",
-            key="wizard_reason",
-            placeholder="예: 장기적인 자산 형성과 분산투자 경험"
+            key="wizard_reason_input",
+            placeholder="예: 장기적인 자산 형성과 분산투자 경험",
+            on_change=sync_wizard_value,
+            args=("wizard_reason_input", "wizard_reason")
         )
 
     elif step == 2:
         st.subheader("초기 투자 금액을 정해줘")
         st.write("이 금액을 기준으로 ETF별 투자 금액이 계산돼")
+
+        prepare_wizard_widget(
+            "wizard_amount_input",
+            "wizard_amount"
+        )
+
         st.number_input(
             "초기 투자금 (원)",
             min_value=100000,
             max_value=1000000000,
-            value=10000000,
             step=1000000,
-            key="wizard_amount"
+            key="wizard_amount_input",
+            on_change=sync_wizard_value,
+            args=("wizard_amount_input", "wizard_amount")
         )
 
     elif step == 3:
         st.subheader("투자 성향을 선택해줘")
+
+        prepare_wizard_widget(
+            "wizard_investor_type_input",
+            "wizard_investor_type"
+        )
 
         st.radio(
             "나의 투자 성향",
@@ -777,7 +800,9 @@ elif st.session_state.page == "wizard":
                 "위험중립형",
                 "적극투자형"
             ],
-            key="wizard_investor_type"
+            key="wizard_investor_type_input",
+            on_change=sync_wizard_value,
+            args=("wizard_investor_type_input", "wizard_investor_type")
         )
 
         st.caption(
@@ -787,31 +812,42 @@ elif st.session_state.page == "wizard":
 
     elif step == 4:
         st.subheader("포트폴리오 이름을 정해줘")
+
+        prepare_wizard_widget(
+            "wizard_portfolio_name_input",
+            "wizard_portfolio_name"
+        )
+
         st.text_input(
             "포트폴리오 이름",
-            key="wizard_portfolio_name",
-            placeholder="예: 나의 첫 번째 투자"
+            key="wizard_portfolio_name_input",
+            placeholder="예: 나의 첫 번째 투자",
+            on_change=sync_wizard_value,
+            args=("wizard_portfolio_name_input", "wizard_portfolio_name")
         )
 
     elif step == 5:
         st.subheader("리밸런싱 방식을 선택해줘")
 
+        prepare_wizard_widget(
+            "wizard_rebalance_mode_input",
+            "wizard_rebalance_mode"
+        )
+
         st.radio(
             "리밸런싱 방식",
-            [
-                "자동",
-                "수동"
-            ],
-            key="wizard_rebalance_mode",
+            ["자동", "수동"],
+            key="wizard_rebalance_mode_input",
             format_func=lambda value: (
                 "자동 리밸런싱" if value == "자동"
                 else "수동 리밸런싱"
-            )
+            ),
+            on_change=sync_wizard_value,
+            args=("wizard_rebalance_mode_input", "wizard_rebalance_mode")
         )
 
         st.write("**자동:** 기준 비중과의 차이가 5%p를 초과하면 자동으로 비중을 조정해")
-
-        st.write("**수동:** 기준 비중과의 차이가 5%p를 초과하면 알림을 표시하고, 직접 실행 버튼을 눌러야 조정돼")
+        st.write("**수동:** 기준 비중과의 차이가 5%p를 초과하면 알림을 표시하고 직접 실행해야 해")
 
     st.divider()
 
@@ -827,8 +863,28 @@ elif st.session_state.page == "wizard":
             st.rerun()
 
     with next_col:
+
         if step < 5:
+
             if st.button("다음", use_container_width=True):
+
+                # 현재 화면의 입력값을 다시 한번 저장
+                input_keys = {
+                    0: ("wizard_investor_name_input", "wizard_investor_name"),
+                    1: ("wizard_reason_input", "wizard_reason"),
+                    2: ("wizard_amount_input", "wizard_amount"),
+                    3: ("wizard_investor_type_input", "wizard_investor_type"),
+                    4: ("wizard_portfolio_name_input", "wizard_portfolio_name")
+                }
+
+                if step in input_keys:
+                    input_key, saved_key = input_keys[step]
+
+                    if input_key in st.session_state:
+                        st.session_state[saved_key] = (
+                            st.session_state[input_key]
+                        )
+
                 required_keys = {
                     0: "wizard_investor_name",
                     1: "wizard_reason",
@@ -837,7 +893,8 @@ elif st.session_state.page == "wizard":
 
                 if step in required_keys:
                     key = required_keys[step]
-                    if not st.session_state.get(key, "").strip():
+
+                    if not str(st.session_state[key]).strip():
                         st.error("내용을 입력해줘")
                         st.stop()
 
@@ -845,6 +902,7 @@ elif st.session_state.page == "wizard":
                 st.rerun()
 
         else:
+
             if st.button(
                 "포트폴리오 생성하기",
                 type="primary",
@@ -852,9 +910,32 @@ elif st.session_state.page == "wizard":
             ):
 
                 try:
-                    weights = get_weights(
-                        st.session_state.wizard_investor_type
-                    )
+                    # 마지막 화면의 리밸런싱 방식도 저장
+                    if "wizard_rebalance_mode_input" in st.session_state:
+                        st.session_state.wizard_rebalance_mode = (
+                            st.session_state.wizard_rebalance_mode_input
+                        )
+
+                    # 필수 정보 확인
+                    if not st.session_state.wizard_investor_name.strip():
+                        st.error("투자자 이름을 확인해줘")
+                        st.stop()
+
+                    if not st.session_state.wizard_portfolio_name.strip():
+                        st.error("포트폴리오 이름을 확인해줘")
+                        st.stop()
+
+                    selected_type = st.session_state.wizard_investor_type
+
+                    if selected_type not in [
+                        "안정추구형",
+                        "위험중립형",
+                        "적극투자형"
+                    ]:
+                        st.error("투자 성향을 다시 선택해줘")
+                        st.stop()
+
+                    weights = get_weights(selected_type)
 
                     initial_amount = float(
                         st.session_state.wizard_amount
@@ -867,11 +948,11 @@ elif st.session_state.page == "wizard":
 
                     new_portfolio = {
                         "owner_id": st.session_state.user_id,
-                        "portfolio_name": st.session_state.wizard_portfolio_name,
-                        "investor_name": st.session_state.wizard_investor_name,
-                        "investment_reason": st.session_state.wizard_reason,
+                        "portfolio_name": st.session_state.wizard_portfolio_name.strip(),
+                        "investor_name": st.session_state.wizard_investor_name.strip(),
+                        "investment_reason": st.session_state.wizard_reason.strip(),
                         "initial_amount": initial_amount,
-                        "investor_type": st.session_state.wizard_investor_type,
+                        "investor_type": selected_type,
                         "rebalance_mode": st.session_state.wizard_rebalance_mode,
                         "simulation_day": 0,
                         "holdings": holdings,
@@ -886,6 +967,9 @@ elif st.session_state.page == "wizard":
                         .execute()
                     )
 
+                    if not response.data:
+                        raise ValueError("저장된 포트폴리오 정보를 확인할 수 없어")
+
                     created = response.data[0]
 
                     st.session_state.selected_portfolio_id = created["id"]
@@ -897,6 +981,7 @@ elif st.session_state.page == "wizard":
                 except Exception as error:
                     st.error("포트폴리오 생성 중 문제가 발생했어")
                     st.code(str(error))
+
 
 
 # =========================================================
@@ -920,7 +1005,7 @@ elif st.session_state.page == "portfolio_list":
             for portfolio in portfolios:
                 with st.container(border=True):
                     st.markdown(
-                        f"### {portfolio['portfolio_name']}"
+                        f"### {portfolio.get('portfolio_name') or '이름 미입력'}"
                     )
 
                     st.caption(
@@ -994,12 +1079,15 @@ elif st.session_state.page == "portfolio_detail":
         for name in ETF_names
     }
 
-    st.markdown(f"# {portfolio['portfolio_name']}")
-    st.caption(
-        f"{portfolio['investor_name']} · "
-        f"{portfolio['investor_type']} · "
-        f"{portfolio['rebalance_mode']} 리밸런싱"
-    )
+st.markdown(
+    f"# {portfolio.get('portfolio_name') or '이름 미입력'}"
+)
+
+st.caption(
+    f"{portfolio.get('investor_name') or '투자자 이름 미입력'} · "
+    f"{portfolio['investor_type']} · "
+    f"{portfolio['rebalance_mode']} 리밸런싱"
+)
 
     st.info(
         "이 화면은 과거 ETF 가격 데이터를 활용한 가상 시뮬레이션이야. "
