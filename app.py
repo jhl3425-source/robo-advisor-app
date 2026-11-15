@@ -1094,7 +1094,7 @@ st.info(
         "실제 거래나 미래 수익을 보장하지 않아"
     )
 
-    st.divider()
+st.divider()
 
     metric1, metric2, metric3 = st.columns(3)
 
@@ -1114,7 +1114,7 @@ st.info(
         f"{simulation_day} / {len(ETF_returns)}일"
     )
 
-    st.subheader("현재 자산 배분")
+st.subheader("현재 자산 배분")
 
     allocation_table = pandas.DataFrame({
         "ETF": ETF_names,
@@ -1132,7 +1132,7 @@ st.info(
         ]
     })
 
-    st.dataframe(
+st.dataframe(
         allocation_table.style.format({
             "현재 비중": "{:.2f}%",
             "목표 비중": "{:.2f}%",
@@ -1146,13 +1146,13 @@ st.info(
         ["현재 비중", "목표 비중"]
     ]
 
-    st.bar_chart(chart_table)
+st.bar_chart(chart_table)
 
-    st.divider()
+st.divider()
 
-    # -----------------------------------------------------
+# -----------------------------------------------------
     # 리밸런싱 대기 상태 확인
-    # -----------------------------------------------------
+ # -----------------------------------------------------
 
     pending_event = None
 
