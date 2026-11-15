@@ -356,25 +356,20 @@ def create_certificate(portfolio, metrics, rebalance_count):
     #폰트
 
     import os
+    import urllib.request
 
-    font_candidates = [
-        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
-        "/usr/share/fonts/truetype/nanum/NanumGothic.ttf",
-        "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc"
-    ]
+    # 공식 Noto Sans KR 폰트 자동 다운로드
+    font_path = "/tmp/NotoSansKR-VF.ttf"
 
-    font_path = None
-
-    for path in font_candidates:
-        if os.path.exists(path):
-            font_path = path
-            break
-
-    if font_path is None:
-        raise RuntimeError(
-            "한글 폰트 설치 확인 필요: packages.txt를 확인해줘"
+    if not os.path.exists(font_path):
+        font_url = (
+            "https://raw.githubusercontent.com/notofonts/noto-cjk/"
+            "main/Sans/Variable/TTF/Subset/NotoSansKR-VF.ttf"
         )
 
+        urllib.request.urlretrieve(font_url, font_path)
+
+    # 큰 글씨 설정
     logo = ImageFont.truetype(font_path, 55)
     title = ImageFont.truetype(font_path, 120)
     name = ImageFont.truetype(font_path, 85)
