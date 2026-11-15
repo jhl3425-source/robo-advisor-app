@@ -112,6 +112,23 @@ if "selected_portfolio_id" not in st.session_state:
 if "wizard_step" not in st.session_state:
     st.session_state.wizard_step = 0
 
+if "wizard_investor_name" not in st.session_state:
+    st.session_state.wizard_investor_name = ""
+
+if "wizard_reason" not in st.session_state:
+    st.session_state.wizard_reason = ""
+
+if "wizard_amount" not in st.session_state:
+    st.session_state.wizard_amount = 10000000
+
+if "wizard_investor_type" not in st.session_state:
+    st.session_state.wizard_investor_type = "위험중립형"
+
+if "wizard_portfolio_name" not in st.session_state:
+    st.session_state.wizard_portfolio_name = ""
+
+if "wizard_rebalance_mode" not in st.session_state:
+    st.session_state.wizard_rebalance_mode = "자동"
 
 # =========================================================
 # 4. 로그인 세션 복구
