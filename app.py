@@ -4,7 +4,7 @@ import pandas
 import pickle
 
 # 저장된 로보어드바이저 데이터 불러오기
-with open("/content/robo_advisor_data.pkl", "rb") as file:
+with open("robo_advisor_data.pkl", "rb") as file:
     app_data = pickle.load(file)
 
 ETF_expected_returns = app_data["ETF_expected_returns"]
