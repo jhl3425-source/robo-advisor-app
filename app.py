@@ -353,9 +353,9 @@ def create_certificate(portfolio, metrics, rebalance_count):
     image = Image.new("RGB", (width, height), "#101C35")
     draw = ImageDraw.Draw(image)
 
-    import os
+    #폰트
 
-    font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+     font_path = "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"
 
     logo = ImageFont.truetype(font_path, 55)
     title = ImageFont.truetype(font_path, 120)
@@ -364,7 +364,7 @@ def create_certificate(portfolio, metrics, rebalance_count):
     heading = ImageFont.truetype(font_path, 48)
     metric = ImageFont.truetype(font_path, 90)
     body = ImageFont.truetype(font_path, 55)
-    small = ImageFont.truetype(font_path, 38) 
+    small = ImageFont.truetype(font_path, 38)
 
     # 배경
     draw.ellipse((1400, -400, 2200, 400), fill="#172A49")
