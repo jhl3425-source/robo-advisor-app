@@ -353,26 +353,9 @@ def create_certificate(portfolio, metrics, rebalance_count):
     image = Image.new("RGB", (width, height), "#101C35")
     draw = ImageDraw.Draw(image)
 
-    # 폰트
-        # 한글 폰트 경로 확인
-    font_paths = [
-        "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
-        "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
-        "/usr/share/fonts/truetype/nanum/NanumGothic.ttf"
-    ]
+    import os
 
-    font_path = None
-
-    for path in font_paths:
-        try:
-            test_font = ImageFont.truetype(path, 50)
-            font_path = path
-            break
-        except:
-            continue
-
-    if font_path is None:
-        raise RuntimeError("한글 폰트를 찾지 못했어. 폰트 설치가 필요해.")
+    font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
 
     logo = ImageFont.truetype(font_path, 55)
     title = ImageFont.truetype(font_path, 120)
@@ -381,7 +364,7 @@ def create_certificate(portfolio, metrics, rebalance_count):
     heading = ImageFont.truetype(font_path, 48)
     metric = ImageFont.truetype(font_path, 90)
     body = ImageFont.truetype(font_path, 55)
-    small = ImageFont.truetype(font_path, 38)
+    small = ImageFont.truetype(font_path, 38) 
 
     # 배경
     draw.ellipse((1400, -400, 2200, 400), fill="#172A49")
