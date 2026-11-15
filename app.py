@@ -1089,7 +1089,7 @@ st.caption(
     f"{portfolio['rebalance_mode']} 리밸런싱"
 )
 
-    st.info(
+st.info(
         "이 화면은 과거 ETF 가격 데이터를 활용한 가상 시뮬레이션이야. "
         "실제 거래나 미래 수익을 보장하지 않아"
     )
