@@ -345,130 +345,193 @@ def calculate_no_rebalance(initial_amount, target_weights, number_of_days):
 
 
 def create_certificate(portfolio, metrics, rebalance_count):
-    """실제 시뮬레이션 성과를 인증서 이미지로 생성"""
 
-    width = 1400
-    height = 1000
+    from PIL import Image, ImageDraw, ImageFont
+    import io
+    import math
 
-    image = Image.new(
-        "RGB",
-        (width, height),
-        "#F5F7FB"
-    )
+    # 캔버스
+    width = 1600
+    height = 1100
 
+    image = Image.new("RGB", (width, height), "#101C35")
     draw = ImageDraw.Draw(image)
 
+    # 폰트
     try:
         font_path = "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"
-        title_font = ImageFont.truetype(font_path, 64)
-        subtitle_font = ImageFont.truetype(font_path, 30)
-        body_font = ImageFont.truetype(font_path, 34)
-        small_font = ImageFont.truetype(font_path, 23)
+        font_logo = ImageFont.truetype(font_path, 35)
+        font_title = ImageFont.truetype(font_path, 75)
+        font_return = ImageFont.truetype(font_path, 125)
+        font_heading = ImageFont.truetype(font_path, 25)
+        font_metric = ImageFont.truetype(font_path, 48)
+        font_body = ImageFont.truetype(font_path, 29)
+        font_small = ImageFont.truetype(font_path, 21)
     except Exception:
-        try:
-            font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
-            title_font = ImageFont.truetype(font_path, 60)
-            subtitle_font = ImageFont.truetype(font_path, 28)
-            body_font = ImageFont.truetype(font_path, 30)
-            small_font = ImageFont.truetype(font_path, 22)
-        except Exception:
-            title_font = ImageFont.load_default()
-            subtitle_font = ImageFont.load_default()
-            body_font = ImageFont.load_default()
-            small_font = ImageFont.load_default()
+        font_logo = ImageFont.load_default()
+        font_title = ImageFont.load_default()
+        font_return = ImageFont.load_default()
+        font_heading = ImageFont.load_default()
+        font_metric = ImageFont.load_default()
+        font_body = ImageFont.load_default()
+        font_small = ImageFont.load_default()
 
+    # 색상
+    white = "#FFFFFF"
+    mint = "#6DD6C1"
+    muted = "#AAB8CC"
+    card = "#1C2C49"
+    line = "#42516A"
+
+    # 배경 장식
+    draw.ellipse(
+        (1120, -300, 1800, 380),
+        fill="#172A49"
+    )
+
+    draw.ellipse(
+        (-300, 850, 350, 1450),
+        fill="#172A49"
+    )
+
+    # 메인 프레임
     draw.rounded_rectangle(
-        (55, 55, 1345, 945),
+        (55, 55, 1545, 1045),
         radius=35,
-        fill="white",
-        outline="#D9E0EB",
-        width=4
-    )
-
-    draw.text(
-        (110, 115),
-        "ROBO ADVISOR",
-        font=subtitle_font,
-        fill="#64748B"
-    )
-
-    draw.text(
-        (110, 185),
-        "PORTFOLIO REPORT",
-        font=title_font,
-        fill="#172B4D"
-    )
-
-    draw.line(
-        (110, 285, 1290, 285),
-        fill="#D9E0EB",
+        outline="#42516A",
         width=3
     )
 
+    # 상단 브랜드
     draw.text(
-        (110, 330),
-        str(portfolio["portfolio_name"]),
-        font=body_font,
-        fill="#172B4D"
+        (110, 100),
+        "ROBO / ADVISOR",
+        font=font_logo,
+        fill=white
     )
 
     draw.text(
-        (110, 390),
-        "Investor: " + str(portfolio["investor_name"]),
-        font=small_font,
-        fill="#64748B"
+        (1120, 112),
+        "PORTFOLIO PERFORMANCE",
+        font=font_small,
+        fill=mint
     )
-
-    draw.text(
-        (110, 465),
-        "Cumulative return",
-        font=small_font,
-        fill="#64748B"
-    )
-
-    draw.text(
-        (110, 505),
-        f'{metrics["누적 수익률"] * 100:.2f}%',
-        font=title_font,
-        fill="#167D66"
-    )
-
-    metric_lines = [
-        f'Annualized risk: {metrics["연환산 위험"] * 100:.2f}%',
-        f'Sharpe ratio: {metrics["샤프지수"]:.2f}',
-        f'Daily VaR 95%: {metrics["일간 VaR 95%"] * 100:.2f}%',
-        f'Rebalancing count: {rebalance_count}'
-    ]
-
-    y_position = 650
-
-    for line in metric_lines:
-        draw.text(
-            (110, y_position),
-            line,
-            font=body_font,
-            fill="#334155"
-        )
-        y_position += 58
 
     draw.line(
-        (110, 875, 1290, 875),
-        fill="#D9E0EB",
+        (110, 175, 1490, 175),
+        fill=line,
         width=2
     )
 
+    # 메인 타이틀
     draw.text(
-        (110, 890),
-        "Educational historical-data simulation | Not actual investment results",
-        font=small_font,
-        fill="#94A3B8"
+        (110, 220),
+        "YOUR MONEY.",
+        font=font_title,
+        fill=white
     )
 
+    draw.text(
+        (110, 310),
+        "YOUR STRATEGY.",
+        font=font_title,
+        fill=mint
+    )
+
+    # 포트폴리오 정보
+    draw.text(
+        (115, 430),
+        str(portfolio["portfolio_name"]),
+        font=font_body,
+        fill=white
+    )
+
+    draw.text(
+        (115, 480),
+        "INVESTOR  /  " + str(portfolio["investor_name"]),
+        font=font_small,
+        fill=muted
+    )
+
+    # 수익률 영역
+    draw.rounded_rectangle(
+        (110, 555, 1490, 790),
+        radius=25,
+        fill=card
+    )
+
+    draw.text(
+        (155, 590),
+        "CUMULATIVE RETURN",
+        font=font_heading,
+        fill=muted
+    )
+
+    return_rate = metrics["누적 수익률"] * 100
+
+    draw.text(
+        (150, 640),
+        f"{return_rate:+.2f}%",
+        font=font_return,
+        fill=mint if return_rate >= 0 else "#FF8B8B"
+    )
+
+    # 성과 지표 카드
+    metric_items = [
+        ("ANNUAL RISK", f'{metrics["연환산 위험"] * 100:.2f}%'),
+        ("SHARPE RATIO", f'{metrics["샤프지수"]:.2f}'),
+        ("DAILY VaR 95%", f'{metrics["일간 VaR 95%"] * 100:.2f}%'),
+        ("REBALANCING", f"{rebalance_count:02d} TIMES")
+    ]
+
+    card_width = 315
+    start_x = 110
+    gap = 40
+
+    for index, item in enumerate(metric_items):
+
+        x = start_x + index * (card_width + gap)
+
+        draw.rounded_rectangle(
+            (x, 830, x + card_width, 965),
+            radius=20,
+            fill=card
+        )
+
+        draw.text(
+            (x + 25, 850),
+            item[0],
+            font=font_small,
+            fill=muted
+        )
+
+        draw.text(
+            (x + 25, 895),
+            item[1],
+            font=font_metric,
+            fill=white
+        )
+
+    # 하단 문구
+    draw.text(
+        (110, 990),
+        "ROBO ADVISOR LAB",
+        font=font_small,
+        fill=mint
+    )
+
+    draw.text(
+        (850, 990),
+        "EDUCATIONAL HISTORICAL-DATA SIMULATION",
+        font=font_small,
+        fill=muted
+    )
+
+    # PNG 변환
     output = io.BytesIO()
     image.save(output, format="PNG")
 
     return output.getvalue()
-
 
 # =========================================================
 # 6. 로그인하지 않은 경우
