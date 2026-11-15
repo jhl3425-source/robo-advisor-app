@@ -357,16 +357,16 @@ def create_certificate(portfolio, metrics, rebalance_count):
     image = Image.new("RGB", (width, height), "#101C35")
     draw = ImageDraw.Draw(image)
 
-    # 폰트
+      # 폰트 설정 - 전체적으로 크게
     try:
         font_path = "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"
-        font_logo = ImageFont.truetype(font_path, 35)
-        font_title = ImageFont.truetype(font_path, 75)
-        font_return = ImageFont.truetype(font_path, 125)
-        font_heading = ImageFont.truetype(font_path, 25)
-        font_metric = ImageFont.truetype(font_path, 48)
-        font_body = ImageFont.truetype(font_path, 29)
-        font_small = ImageFont.truetype(font_path, 21)
+        font_logo = ImageFont.truetype(font_path, 42)
+        font_title = ImageFont.truetype(font_path, 85)
+        font_return = ImageFont.truetype(font_path, 150)
+        font_heading = ImageFont.truetype(font_path, 32)
+        font_metric = ImageFont.truetype(font_path, 58)
+        font_body = ImageFont.truetype(font_path, 42)
+        font_small = ImageFont.truetype(font_path, 29)
     except Exception:
         font_logo = ImageFont.load_default()
         font_title = ImageFont.load_default()
